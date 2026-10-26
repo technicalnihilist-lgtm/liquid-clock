@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#eceffa">
+<title>Liquid Clock</title>
+<style>
+:root{--bg:#eceffa;--tx:#0b0c14;--tx2:#5b5f73;--glass:rgba(255,255,255,.4);--glass2:rgba(255,255,255,.65);--edge:rgba(255,255,255,.85);--edge2:rgba(255,255,255,.22);--sh:rgba(40,50,110,.2);--ac:#ff9f0a;--b1:#7aa2ff;--b2:#ff8fd0;--b3:#7fe8d1;--sat:0px;--sab:0px;color-scheme:light}
+html[data-theme="dark"]{--bg:#090a14;--tx:#f4f5fb;--tx2:#a3a7bd;--glass:rgba(40,44,70,.4);--glass2:rgba(70,76,115,.6);--edge:rgba(255,255,255,.3);--edge2:rgba(255,255,255,.05);--sh:rgba(0,0,0,.5);--b1:#3d5bd9;--b2:#a3278a;--b3:#16907a;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",system-ui,sans-serif;-webkit-user-select:none;user-select:none;overscroll-behavior:none;transition:background .4s ease,color .4s ease}
+body{display:flex;justify-content:center;align-items:center;overflow:hidden}
+.phone{position:relative;width:100%;max-width:430px;height:100%;max-height:900px;overflow:hidden;background:var(--bg)}
+@media(min-width:500px){.phone{height:min(880px,96%);border-radius:48px;box-shadow:0 0 0 10px #15161d,0 30px 80px var(--sh)}}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.8;animation:fl 16s ease-in-out infinite alternate;will-change:transform}
+.b1{width:300px;height:300px;background:var(--b1);top:-70px;left:-80px}
+.b2{width:280px;height:280px;background:var(--b2);top:300px;right:-100px;animation-delay:-5s}
+.b3{width:300px;height:300px;background:var(--b3);bottom:-60px;left:-50px;animation-delay:-10s}
+@keyframes fl{to{transform:translate(40px,-50px) scale(1.15)}}
+@media(prefers-reduced-motion:reduce){.blob{animation:none}}
+.glass{background:var(--glass);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid var(--edge2);box-shadow:inset 1.5px 1.5px 1px var(--edge),inset -1px -1px 1px var(--edge2),0 10px 30px var(--sh)}
+main{position:absolute;inset:0;overflow-y:auto;padding:calc(20px + var(--sat)) 18px calc(120px + var(--sab));scrollbar-width:none;-webkit-overflow-scrolling:touch}
+main::-webkit-scrollbar{display:none}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.bar h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.02em}
+.pill{height:36px;padding:0 15px;border-radius:18px;border:0;color:var(--tx);font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.face{width:min(300px,76vw);aspect-ratio:1;margin:18px auto 0;border-radius:50%;position:relative;display:grid;place-items:center}
+.face svg{position:absolute;inset:0;width:100%;height:100%}
+.hand{position:absolute;left:50%;bottom:50%;transform-origin:50% 100%;border-radius:4px;will-change:transform}
+#hh{width:7px;height:25%;margin-left:-3.5px;background:var(--tx)}
+#mm{width:5px;height:36%;margin-left:-2.5px;background:var(--tx)}
+#ss{width:2px;height:40%;margin-left:-1px;background:var(--ac)}
+#ss::after{content:"";position:absolute;bottom:-14px;left:-1px;width:2px;height:14px;background:var(--ac)}
+.pin{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--ac);box-shadow:0 0 0 3px var(--glass2)}
+.dig{text-align:center;margin-top:26px}
+.dig .t{font-size:64px;font-weight:300;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.dig .t small{font-size:22px;font-weight:600;margin-left:6px;color:var(--ac)}
+.dig .d{font-size:17px;color:var(--tx2);font-weight:600;margin-top:8px}
+h2{font-size:20px;margin:28px 4px 10px}
+.wc{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-radius:24px;margin-bottom:10px}
+.wc b{display:block;font-size:19px}
+.wc span{font-size:13px;color:var(--tx2)}
+.wc .tm{font-size:34px;font-weight:300;font-variant-numeric:tabular-nums}
+.wc .tm small{font-size:14px;font-weight:700;margin-left:3px;color:var(--ac)}
+.big{text-align:center;font-size:76px;font-weight:200;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin:34px 0 26px}
+.ctl{display:flex;justify-content:space-between;padding:0 6px}
+.cb{width:84px;height:84px;border-radius:50%;border:0;font:inherit;font-weight:700;font-size:16px;color:var(--tx);cursor:pointer;transition:transform .12s ease}
+.cb.go{color:#fff;background:linear-gradient(135deg,#34c759,#1fa84a);box-shadow:inset 1.5px 1.5px 1px rgba(255,255,255,.6),0 8px 22px rgba(52,199,89,.5)}
+.cb.stop{color:#fff;background:linear-gradient(135deg,#ff453a,#d62f26);box-shadow:inset 1.5px 1.5px 1px rgba(255,255,255,.6),0 8px 22px rgba(255,69,58,.5)}
+.cb:active{transform:scale(.93)}
+.cb:disabled{opacity:.45}
+.lap{display:flex;justify-content:space-between;padding:12px 18px;font-variant-numeric:tabular-nums;font-size:17px;border-radius:18px;margin-top:8px;animation:pop .25s ease}
+.lap span:first-child{color:var(--tx2)}
+@keyframes pop{from{opacity:0;transform:translateY(-6px)}}
+.ringw{width:min(280px,72vw);aspect-ratio:1;margin:22px auto 0;position:relative;border-radius:50%;display:grid;place-items:center}
+.ringw svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ringw .big{margin:0;font-size:58px}
+.pre{display:flex;gap:10px;justify-content:center;margin:24px 0}
+nav{position:absolute;left:14px;right:14px;bottom:calc(14px + var(--sab));z-index:10;height:68px;border-radius:34px;display:flex;padding:6px;gap:2px}
+nav.glass{background:var(--glass2)}
+nav button{flex:1;border:0;background:none;border-radius:28px;color:var(--tx2);font:inherit;font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:.3s}
+nav button i{font-style:normal;display:flex;align-items:center;justify-content:center;height:22px}
+nav button.on{color:var(--ac);background:var(--glass2);box-shadow:inset 1.5px 1.5px 1px var(--edge),0 4px 14px var(--sh)}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.fade{animation:fade .28s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <main id="main"></main>
+  <nav class="glass" id="nav"></nav>
+</div>
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const Z = [
+  ['Mumbai','Asia/Kolkata'],
+  ['London','Europe/London'],
+  ['New York','America/New_York'],
+  ['Dubai','Asia/Dubai'],
+  ['Tokyo','Asia/Tokyo'],
+  ['Sydney','Australia/Sydney']
+];
+const ICON = {
+  clock:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6.8v5.4l3.4 2"/></svg>',
+  sw:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.6" r="7.4"/><path d="M12 10.2v3.6l2.4 1.6"/><path d="M9.6 2.6h4.8"/><path d="M12 2.6v3.6"/></svg>',
+  tm:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.2h10"/><path d="M7 20.8h10"/><path d="M8.2 3.2v3c0 1.7 3.8 3.9 3.8 5.8s-3.8 4.1-3.8 5.8v3"/><path d="M15.8 3.2v3c0 1.7-3.8 3.9-3.8 5.8s3.8 4.1 3.8 5.8v3"/></svg>'
+};
+const TABS = [['clock','Clock'],['sw','Stopwatch'],['tm','Timer']];
+
+/* ---------- persistence ---------- */
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+
+let tab = 'clock';
+let h24 = store.get('lc.h24', false);
+
+const p2 = n => String(n).padStart(2, '0');
+const myTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+/* ---------- native bridge helpers ---------- */
+function buzz(p){
+  try{
+    if (navigator.vibrate) navigator.vibrate(p);
+    else if (window.Android && window.Android.vibrate) window.Android.vibrate(Array.isArray(p) ? p[0] : p);
+  }catch(e){}
+}
+function keepAwake(on){
+  try{ if (window.Android && window.Android.keepAwake) window.Android.keepAwake(!!on); }catch(e){}
+}
+let ac = null;
+function beep(){
+  try{
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+    const t0 = ac.currentTime;
+    [0, .2, .4].forEach((d, i) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'sine';
+      o.frequency.value = i === 2 ? 1046.5 : 880;
+      g.gain.setValueAtTime(0, t0 + d);
+      g.gain.linearRampToValueAtTime(.3, t0 + d + .02);
+      g.gain.exponentialRampToValueAtTime(.0001, t0 + d + .18);
+      o.connect(g); g.connect(ac.destination);
+      o.start(t0 + d); o.stop(t0 + d + .2);
+    });
+  }catch(e){}
+}
+
+/* ---------- time formatting ---------- */
+function parts(d, tz){
+  const f = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }).formatToParts(d);
+  const o = {};
+  f.forEach(x => { if (x.type !== 'literal') o[x.type] = +x.value; });
+  o.hour %= 24;
+  return o;
+}
+function fmt(o, sec){
+  const h = h24 ? p2(o.hour) : (o.hour % 12 || 12);
+  const ap = h24 ? '' : (o.hour >= 12 ? 'PM' : 'AM');
+  return { t: h + ':' + p2(o.minute) + (sec ? ':' + p2(o.second) : ''), ap: ap };
+}
+function dayWord(d, tz){
+  const a = d.toLocaleDateString('en-CA', { timeZone: tz });
+  const b = d.toLocaleDateString('en-CA', { timeZone: myTz });
+  return a === b ? 'Today' : (a > b ? 'Tomorrow' : 'Yesterday');
+}
+function ms(v, cs){
+  const t = Math.max(0, v);
+  const m = Math.floor(t / 60000), s = Math.floor(t / 1000) % 60, c = Math.floor(t / 10) % 100;
+  return p2(m) + ':' + p2(s) + (cs ? '.' + p2(c) : '');
+}
+
+/* ---------- stopwatch (wall-clock based so it survives backgrounding) ---------- */
+let sw = store.get('lc.sw', { run:false, start:0, acc:0, laps:[] });
+const swNow = () => sw.acc + (sw.run ? Date.now() - sw.start : 0);
+const saveSw = () => store.set('lc.sw', sw);
+
+/* ---------- timer ---------- */
+let tm = store.get('lc.tm', { run:false, end:0, left:60000, total:60000, done:false });
+const saveTm = () => store.set('lc.tm', tm);
+
+/* ---------- render ---------- */
+function render(){
+  $('#nav').innerHTML = TABS.map(t =>
+    `<button data-t="${t[0]}" class="${t[0]===tab?'on':''}"><i>${ICON[t[0]]}</i>${t[1]}</button>`).join('');
+  const m = $('#main');
+
+  if (tab === 'clock'){
+    let ticks = '';
+    for (let i = 0; i < 60; i++){
+      const a = i * 6, big = i % 5 === 0, r1 = big ? 42 : 45, r2 = 47.5, rad = Math.PI / 180 * a;
+      ticks += `<line x1="${50+r1*Math.sin(rad)}" y1="${50-r1*Math.cos(rad)}" x2="${50+r2*Math.sin(rad)}" y2="${50-r2*Math.cos(rad)}" stroke="currentColor" stroke-width="${big?1.1:.4}" opacity="${big?.9:.45}" stroke-linecap="round"/>`;
+    }
+    let nums = '';
+    for (let i = 1; i <= 12; i++){
+      const rad = Math.PI / 180 * i * 30;
+      nums += `<text x="${50+34*Math.sin(rad)}" y="${50-34*Math.cos(rad)+3}" text-anchor="middle" font-size="8" font-weight="600" fill="currentColor">${i}</text>`;
+    }
+    m.innerHTML = `<div class="fade"><div class="bar"><h1>Clock</h1><button class="pill glass" id="fmt"></button></div>
+    <div class="face glass"><svg viewBox="0 0 100 100">${ticks}${nums}</svg><div class="hand" id="hh"></div><div class="hand" id="mm"></div><div class="hand" id="ss"></div><div class="pin"></div></div>
+    <div class="dig"><div class="t" id="dt"></div><div class="d" id="dd"></div></div>
+    <h2>World clock</h2>${Z.map((z,i)=>`<div class="wc glass"><div><b>${z[0]}</b><span id="wd${i}"></span></div><div class="tm" id="wt${i}"></div></div>`).join('')}</div>`;
+    $('#fmt').onclick = () => { h24 = !h24; store.set('lc.h24', h24); buzz(8); upd(); };
+    keepAwake(true);
+  }
+
+  if (tab === 'sw'){
+    m.innerHTML = `<div class="fade"><div class="bar"><h1>Stopwatch</h1></div><div class="big" id="sbig"></div>
+    <div class="ctl"><button class="cb glass" id="sl"></button><button class="cb" id="sg"></button></div><div id="laps"></div></div>`;
+    $('#sl').onclick = () => {
+      buzz(10);
+      if (sw.run){ sw.laps.unshift(swNow()); saveSw(); }
+      else { sw = { run:false, start:0, acc:0, laps:[] }; saveSw(); }
+      drawSw();
+    };
+    $('#sg').onclick = () => {
+      buzz(12);
+      if (sw.run){ sw.acc = swNow(); sw.run = false; }
+      else { sw.start = Date.now(); sw.run = true; }
+      saveSw(); drawSw();
+    };
+    drawSw();
+    keepAwake(false);
+  }
+
+  if (tab === 'tm'){
+    m.innerHTML = `<div class="fade"><div class="bar"><h1>Timer</h1></div>
+    <div class="ringw glass"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(128,128,150,.25)" stroke-width="3"/><circle id="arc" cx="50" cy="50" r="46" fill="none" stroke="var(--ac)" stroke-width="3" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="0"/></svg><div class="big" id="tbig"></div></div>
+    <div class="pre">${[1,5,10,25].map(n=>`<button class="pill glass" data-m="${n}">${n} min</button>`).join('')}</div>
+    <div class="ctl"><button class="cb glass" id="tr">Reset</button><button class="cb" id="tg"></button></div></div>`;
+    document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
+      buzz(8);
+      tm = { run:false, end:0, left: b.dataset.m * 60000, total: b.dataset.m * 60000, done:false };
+      saveTm(); drawTm();
+    });
+    $('#tr').onclick = () => {
+      buzz(8);
+      tm = { run:false, end:0, left: tm.total, total: tm.total, done:false };
+      saveTm(); drawTm();
+    };
+    $('#tg').onclick = () => {
+      buzz(12);
+      if (tm.done){ tm.left = tm.total; tm.done = false; }
+      if (tm.run){ tm.left = Math.max(0, tm.end - Date.now()); tm.run = false; }
+      else { tm.end = Date.now() + tm.left; tm.run = true; }
+      saveTm(); drawTm();
+    };
+    drawTm();
+    keepAwake(false);
+  }
+  upd();
+}
+
+function drawSw(){
+  const g = $('#sg'), l = $('#sl');
+  if (!g) return;
+  g.className = 'cb ' + (sw.run ? 'stop' : 'go');
+  g.textContent = sw.run ? 'Stop' : 'Start';
+  l.textContent = sw.run ? 'Lap' : 'Reset';
+  l.disabled = !sw.run && swNow() === 0;
+  $('#laps').innerHTML = sw.laps.map((v, i) =>
+    `<div class="lap glass"><span>Lap ${sw.laps.length - i}</span><span>${ms(v - (sw.laps[i+1] || 0), true)}</span></div>`).join('');
+}
+
+function drawTm(){
+  const g = $('#tg');
+  if (!g) return;
+  g.className = 'cb ' + (tm.run ? 'stop' : 'go');
+  g.textContent = tm.run ? 'Pause' : (tm.done ? 'Again' : 'Start');
+}
+
+/* ---------- frame loop ---------- */
+function upd(){
+  const d = new Date();
+
+  if (tab === 'clock' && $('#hh')){
+    const o = parts(d, myTz), milli = d.getMilliseconds();
+    const s = o.second + milli / 1000, mi = o.minute + s / 60, h = o.hour % 12 + mi / 60;
+    $('#ss').style.transform = `rotate(${s*6}deg)`;
+    $('#mm').style.transform = `rotate(${mi*6}deg)`;
+    $('#hh').style.transform = `rotate(${h*30}deg)`;
+    const f = fmt(o, true);
+    $('#dt').innerHTML = f.t + (f.ap ? `<small>${f.ap}</small>` : '');
+    $('#dd').textContent = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+    $('#fmt').textContent = h24 ? '24-hour' : '12-hour';
+    Z.forEach((z, i) => {
+      const w = parts(d, z[1]), x = fmt(w, false);
+      const te = $('#wt' + i), de = $('#wd' + i);
+      if (te) te.innerHTML = x.t + (x.ap ? `<small>${x.ap}</small>` : '');
+      if (de) de.textContent = dayWord(d, z[1]);
+    });
+  }
+
+  if (tab === 'sw' && $('#sbig')){
+    $('#sbig').textContent = ms(swNow(), true);
+    const l = $('#sl');
+    if (l) l.disabled = !sw.run && swNow() === 0;
+  }
+
+  if (tab === 'tm' && $('#tbig')){
+    let left = tm.run ? tm.end - Date.now() : tm.left;
+    if (tm.run && left <= 0){
+      tm.run = false; tm.done = true; tm.left = 0; left = 0;
+      saveTm(); drawTm();
+      buzz([400, 180, 400, 180, 400]);
+      beep();
+    }
+    if (left < 0) left = 0;
+    $('#tbig').textContent = tm.done ? 'Done' : ms(Math.ceil(left / 1000) * 1000);
+    const arc = $('#arc');
+    if (arc) arc.style.strokeDashoffset = 289 * (1 - (left / tm.total));
+  }
+
+  requestAnimationFrame(upd);
+}
+
+/* ---------- wiring ---------- */
+$('#nav').onclick = e => {
+  const b = e.target.closest('button');
+  if (b && b.dataset.t !== tab){ tab = b.dataset.t; buzz(6); render(); }
+};
+
+document.addEventListener('visibilitychange', () => { if (!document.hidden) upd(); });
+
+/* called from the native shell */
+window.__setInsets = (top, bottom) => {
+  document.documentElement.style.setProperty('--sat', (top || 0) + 'px');
+  document.documentElement.style.setProperty('--sab', (bottom || 0) + 'px');
+};
+window.__setDark = isDark => {
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  const meta = document.querySelector('meta[name=theme-color]');
+  if (meta) meta.setAttribute('content', isDark ? '#090a14' : '#eceffa');
+};
+window.__onBack = () => {
+  if (tab !== 'clock'){ tab = 'clock'; render(); return true; }
+  return false;
+};
+
+render();
+requestAnimationFrame(upd);
+</script>
+</body>
+</html>
