@@ -20,10 +20,13 @@ Built from a single-page HTML design and wrapped in a native Android WebView she
 
 ## Install
 
-Download `releases/LiquidClock-1.0.0.apk` and open it on your phone. You will need to allow install from unknown sources, since this is a self-signed build rather than a Play Store release.
+**[Download LiquidClock-1.0.0.apk](https://github.com/technicalnihilist-lgtm/liquid-clock/releases/latest/download/LiquidClock-1.0.0.apk)** and open it on your phone. You will need to allow install from unknown sources, since this is a self-signed build rather than a Play Store release.
 
 - Minimum Android 6.0 (API 23), targets Android 14 (API 34)
-- Size ~250 KB, no dependencies
+- Size ~254 KB, no dependencies, no internet permission
+- APK SHA-256: `2628ef7e3dda7acf9f0cf3269ede70b8cd47ec6ce24c6f6b2c84f931d1324ec2`
+
+Newer builds are published on the [Releases](https://github.com/technicalnihilist-lgtm/liquid-clock/releases) page; the same copy also sits in `releases/` in the repo.
 
 ## Build
 
