@@ -2,9 +2,24 @@
 
 A glassy, liquid-blob clock for Android — analog + digital clock, world clock, stopwatch and timer in one offline app.
 
-![Liquid Clock screens](screenshots/hero.png)
+![Liquid Clock screens](https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/main/screenshots/hero.png)
 
 Built from a single-page HTML design and wrapped in a native Android WebView shell, so the whole UI is one file you can edit without touching Java.
+
+## Screenshots
+
+| Clock | Clock (dark) | Stopwatch | Timer |
+| --- | --- | --- | --- |
+| ![Clock](https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/main/screenshots/1-clock-light.png) | ![Clock dark](https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/main/screenshots/2-clock-dark.png) | ![Stopwatch](https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/main/screenshots/3-stopwatch.png) | ![Timer](https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/main/screenshots/4-timer.png) |
+
+Direct links:
+
+- https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/main/screenshots/1-clock-light.png
+- https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/main/screenshots/2-clock-dark.png
+- https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/main/screenshots/3-stopwatch.png
+- https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/main/screenshots/4-timer.png
+
+App icon: https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/main/icon.png
 
 ## Features
 
