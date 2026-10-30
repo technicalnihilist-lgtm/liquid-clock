@@ -6,25 +6,30 @@
 <meta name="theme-color" content="#eceffa">
 <title>Liquid Clock</title>
 <style>
-:root{--bg:#eceffa;--tx:#0b0c14;--tx2:#5b5f73;--glass:rgba(255,255,255,.4);--glass2:rgba(255,255,255,.65);--edge:rgba(255,255,255,.85);--edge2:rgba(255,255,255,.22);--sh:rgba(40,50,110,.2);--ac:#ff9f0a;--b1:#7aa2ff;--b2:#ff8fd0;--b3:#7fe8d1;--sat:0px;--sab:0px;color-scheme:light}
-html[data-theme="dark"]{--bg:#090a14;--tx:#f4f5fb;--tx2:#a3a7bd;--glass:rgba(40,44,70,.4);--glass2:rgba(70,76,115,.6);--edge:rgba(255,255,255,.3);--edge2:rgba(255,255,255,.05);--sh:rgba(0,0,0,.5);--b1:#3d5bd9;--b2:#a3278a;--b3:#16907a;color-scheme:dark}
+:root{--bg:#eceffa;--tx:#0b0c14;--tx2:#5b5f73;--ta:1;--gb:26px;--gs:190%;--hl:1;--bo:.8;--glass:rgba(255,255,255,calc(.4*var(--ta)));--glass2:rgba(255,255,255,calc(.62*var(--ta)));--g1:rgba(255,255,255,calc(.6*var(--ta)));--g2:rgba(255,255,255,calc(.12*var(--ta)));--edge:rgba(255,255,255,calc(.95*var(--hl)));--edge2:rgba(255,255,255,calc(.25*var(--hl)));--sh:rgba(40,50,110,.2);--ac:#ff9f0a;--b1:#7aa2ff;--b2:#ff8fd0;--b3:#7fe8d1;--sat:0px;--sab:0px;--spring:cubic-bezier(.34,1.56,.64,1);color-scheme:light}
+@supports(transition-timing-function:linear(0,1)){:root{--spring:linear(0,.009,.035 2.1%,.141,.281 6.7%,.723 12.9%,.938 16.7%,1.017,1.077,1.121,1.149 24.3%,1.159,1.163,1.161,1.154 29.9%,1.129 32.8%,1.051 39.6%,1.017 43.1%,.991,.977 51%,.974 53.8%,.975 57.1%,.997 69.8%,1.003 76.9%,1.004 83.8%,1)}}
+html[data-theme="dark"]{--bg:#090a14;--tx:#f4f5fb;--tx2:#a3a7bd;--glass:rgba(40,44,70,calc(.4*var(--ta)));--glass2:rgba(70,76,115,calc(.6*var(--ta)));--g1:rgba(255,255,255,calc(.16*var(--ta)));--g2:rgba(255,255,255,calc(.02*var(--ta)));--edge:rgba(255,255,255,calc(.3*var(--hl)));--edge2:rgba(255,255,255,calc(.05*var(--hl)));--sh:rgba(0,0,0,.5);--b1:#3d5bd9;--b2:#a3278a;--b3:#16907a;color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",system-ui,sans-serif;-webkit-user-select:none;user-select:none;overscroll-behavior:none;transition:background .4s ease,color .4s ease}
-body{display:flex;justify-content:center;align-items:center;overflow:hidden}
+body{height:100dvh;display:flex;justify-content:center;align-items:center;overflow:hidden}
 .phone{position:relative;width:100%;max-width:430px;height:100%;max-height:900px;overflow:hidden;background:var(--bg)}
 @media(min-width:500px){.phone{height:min(880px,96%);border-radius:48px;box-shadow:0 0 0 10px #15161d,0 30px 80px var(--sh)}}
-.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.8;animation:fl 16s ease-in-out infinite alternate;will-change:transform}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:var(--bo);animation:fl 16s ease-in-out infinite alternate;will-change:transform}
 .b1{width:300px;height:300px;background:var(--b1);top:-70px;left:-80px}
 .b2{width:280px;height:280px;background:var(--b2);top:300px;right:-100px;animation-delay:-5s}
 .b3{width:300px;height:300px;background:var(--b3);bottom:-60px;left:-50px;animation-delay:-10s}
 @keyframes fl{to{transform:translate(40px,-50px) scale(1.15)}}
-@media(prefers-reduced-motion:reduce){.blob{animation:none}}
-.glass{background:var(--glass);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid var(--edge2);box-shadow:inset 1.5px 1.5px 1px var(--edge),inset -1px -1px 1px var(--edge2),0 10px 30px var(--sh)}
-main{position:absolute;inset:0;overflow-y:auto;padding:calc(20px + var(--sat)) 18px calc(120px + var(--sab));scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.glass{background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g1)),var(--glass);backdrop-filter:blur(var(--gb)) saturate(var(--gs));-webkit-backdrop-filter:blur(var(--gb)) saturate(var(--gs));border:1px solid var(--edge2);box-shadow:inset 1.5px 1.5px 1px var(--edge),inset -1px -1px 1px var(--edge2),inset 0 0 22px rgba(255,255,255,.14),0 12px 30px var(--sh)}
+.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(130% 70% at 15% -5%,rgba(255,255,255,.5),transparent 60%);opacity:calc(.4*var(--hl))}
+main{position:absolute;inset:0;overflow-y:auto;overscroll-behavior-y:none;padding:calc(20px + var(--sat)) 18px calc(120px + var(--sab));scrollbar-width:none;-webkit-overflow-scrolling:touch}
 main::-webkit-scrollbar{display:none}
+#view{will-change:transform}
 .bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .bar h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.02em}
+.pill,.cb,.wc,.lap,nav button{position:relative;transition:transform .8s var(--spring)}
 .pill{height:36px;padding:0 15px;border-radius:18px;border:0;color:var(--tx);font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.acts{display:flex;gap:8px;align-items:center}
+.gear{width:36px;padding:0;display:grid;place-items:center}
 .face{width:min(300px,76vw);aspect-ratio:1;margin:18px auto 0;border-radius:50%;position:relative;display:grid;place-items:center}
 .face svg{position:absolute;inset:0;width:100%;height:100%}
 .hand{position:absolute;left:50%;bottom:50%;transform-origin:50% 100%;border-radius:4px;will-change:transform}
@@ -45,33 +50,59 @@ h2{font-size:20px;margin:28px 4px 10px}
 .wc .tm small{font-size:14px;font-weight:700;margin-left:3px;color:var(--ac)}
 .big{text-align:center;font-size:76px;font-weight:200;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin:34px 0 26px}
 .ctl{display:flex;justify-content:space-between;padding:0 6px}
-.cb{width:84px;height:84px;border-radius:50%;border:0;font:inherit;font-weight:700;font-size:16px;color:var(--tx);cursor:pointer;transition:transform .12s ease}
+.cb{width:84px;height:84px;border-radius:50%;border:0;font:inherit;font-weight:700;font-size:16px;color:var(--tx);cursor:pointer}
 .cb.go{color:#fff;background:linear-gradient(135deg,#34c759,#1fa84a);box-shadow:inset 1.5px 1.5px 1px rgba(255,255,255,.6),0 8px 22px rgba(52,199,89,.5)}
 .cb.stop{color:#fff;background:linear-gradient(135deg,#ff453a,#d62f26);box-shadow:inset 1.5px 1.5px 1px rgba(255,255,255,.6),0 8px 22px rgba(255,69,58,.5)}
-.cb:active{transform:scale(.93)}
+.pill:active,.cb:active{transform:scale(.88);transition-duration:.12s}
+.wc:active,.lap:active{transform:scale(.97);transition-duration:.12s}
 .cb:disabled{opacity:.45}
-.lap{display:flex;justify-content:space-between;padding:12px 18px;font-variant-numeric:tabular-nums;font-size:17px;border-radius:18px;margin-top:8px;animation:pop .25s ease}
+.cb:disabled:active{transform:none}
+.lap{display:flex;justify-content:space-between;padding:12px 18px;font-variant-numeric:tabular-nums;font-size:17px;border-radius:18px;margin-top:8px}
 .lap span:first-child{color:var(--tx2)}
-@keyframes pop{from{opacity:0;transform:translateY(-6px)}}
 .ringw{width:min(280px,72vw);aspect-ratio:1;margin:22px auto 0;position:relative;border-radius:50%;display:grid;place-items:center}
 .ringw svg{position:absolute;inset:0;transform:rotate(-90deg)}
 .ringw .big{margin:0;font-size:58px}
 .pre{display:flex;gap:10px;justify-content:center;margin:24px 0}
-nav{position:absolute;left:14px;right:14px;bottom:calc(14px + var(--sab));z-index:10;height:68px;border-radius:34px;display:flex;padding:6px;gap:2px}
+nav{position:absolute;left:14px;right:14px;bottom:calc(14px + var(--sab));z-index:10;height:68px;border-radius:34px;display:flex;padding:6px}
 nav.glass{background:var(--glass2)}
-nav button{flex:1;border:0;background:none;border-radius:28px;color:var(--tx2);font:inherit;font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:.3s}
-nav button i{font-style:normal;display:flex;align-items:center;justify-content:center;height:22px}
-nav button.on{color:var(--ac);background:var(--glass2);box-shadow:inset 1.5px 1.5px 1px var(--edge),0 4px 14px var(--sh)}
+.lens{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/3);transform:translateX(calc(var(--i,0)*100%));transition:transform .6s cubic-bezier(.3,1.15,.4,1);pointer-events:none}
+.lens.drag{transition:none}
+nav{touch-action:none}
+.lens div{width:100%;height:100%;border-radius:28px;background:linear-gradient(135deg,var(--g1),var(--g2)),var(--glass2);box-shadow:inset 1.5px 1.5px 1px var(--edge),inset -1px -1px 1px var(--edge2),0 4px 14px var(--sh)}
+nav button{flex:1;z-index:1;border:0;background:none;border-radius:28px;color:var(--tx2);font:inherit;font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:transform .8s var(--spring),color .3s}
+nav button:active{transform:scale(.9);transition-duration:.12s,.3s}
+nav button i{font-style:normal;display:flex;align-items:center;justify-content:center;height:22px;transition:transform .8s var(--spring)}
+nav button.on{color:var(--ac)}
+nav button.on i{transform:translateY(-1px) scale(1.15)}
+.scrim{position:absolute;inset:0;z-index:20;background:rgba(10,12,30,.3);opacity:0;pointer-events:none;transition:opacity .35s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:10px;right:10px;bottom:calc(10px + var(--sab));z-index:21;border-radius:34px;padding:10px 22px 22px;background:var(--glass2);background:color-mix(in srgb,var(--bg) 62%,transparent);-webkit-backdrop-filter:blur(34px) saturate(180%);backdrop-filter:blur(34px) saturate(180%);border:1px solid var(--edge2);box-shadow:inset 1.5px 1.5px 1px var(--edge),0 -10px 40px var(--sh)}
+.grab{width:40px;height:5px;border-radius:3px;background:rgba(128,128,150,.45);margin:0 auto 12px}
+.sh-h{display:flex;justify-content:space-between;align-items:center}
+.sh-h b{font-size:20px}
+.sh-h span{display:flex;gap:8px}
+.sheet .pill{background:rgba(128,128,150,.2)}
+.row{margin-top:14px}
+.row div{display:flex;justify-content:space-between;font-size:14px;font-weight:700}
+.row div span{color:var(--tx2);font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;margin:2px 0 0;background:transparent;touch-action:pan-x;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--ac) var(--p,50%),rgba(128,128,150,.3) var(--p,50%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-10px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3);transition:transform .6s var(--spring)}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2)}
+input[type=range]::-moz-range-track{height:8px;border-radius:4px;background:rgba(128,128,150,.3)}
+input[type=range]::-moz-range-progress{height:8px;border-radius:4px;background:var(--ac)}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border:0;border-radius:50%;background:#fff}
 :focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-.fade{animation:fade .28s ease}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+@media(prefers-reduced-motion:reduce){.blob{animation:none}*{transition-duration:.01s!important}}
 </style>
 </head>
 <body>
 <div class="phone">
   <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
-  <main id="main"></main>
+  <main id="main"><div id="view"></div></main>
   <nav class="glass" id="nav"></nav>
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="sheet" hidden></div>
 </div>
 <script>
 "use strict";
@@ -133,8 +164,9 @@ function beep(){
 }
 
 /* ---------- time formatting ---------- */
+const fm = {};
 function parts(d, tz){
-  const f = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }).formatToParts(d);
+  const f = (fm[tz] = fm[tz] || new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false })).formatToParts(d);
   const o = {};
   f.forEach(x => { if (x.type !== 'literal') o[x.type] = +x.value; });
   o.hour %= 24;
@@ -165,66 +197,112 @@ const saveSw = () => store.set('lc.sw', sw);
 let tm = store.get('lc.tm', { run:false, end:0, left:60000, total:60000, done:false });
 const saveTm = () => store.set('lc.tm', tm);
 
-/* ---------- render ---------- */
-function render(){
-  $('#nav').innerHTML = TABS.map(t =>
-    `<button data-t="${t[0]}" class="${t[0]===tab?'on':''}"><i>${ICON[t[0]]}</i>${t[1]}</button>`).join('');
-  const m = $('#main');
+/* ---------- motion ---------- */
+const main = $('#main'), view = $('#view'), nav = $('#nav'), el = {};
+const RM = matchMedia('(prefers-reduced-motion:reduce)').matches;
+const SP = getComputedStyle(document.documentElement).getPropertyValue('--spring').trim() || 'ease-out';
+function anim(e, kf, o){
+  if (!e || RM || !e.animate) return null;
+  try{ return e.animate(kf, Object.assign({ duration:800, easing:SP }, o)); }catch(x){ return null; }
+}
+const put = (e, v, h) => { if (e && e._v !== v){ e._v = v; if (h) e.innerHTML = v; else e.textContent = v; } };
+const idx = t => TABS.findIndex(x => x[0] === t);
+const syncAwake = () => keepAwake(tab === 'clock' || sw.run || tm.run);
 
-  if (tab === 'clock'){
-    let ticks = '';
+/* ---------- pages ---------- */
+function pageHTML(t){
+  if (t === 'clock'){
+    let ticks = '', nums = '';
     for (let i = 0; i < 60; i++){
       const a = i * 6, big = i % 5 === 0, r1 = big ? 42 : 45, r2 = 47.5, rad = Math.PI / 180 * a;
       ticks += `<line x1="${50+r1*Math.sin(rad)}" y1="${50-r1*Math.cos(rad)}" x2="${50+r2*Math.sin(rad)}" y2="${50-r2*Math.cos(rad)}" stroke="currentColor" stroke-width="${big?1.1:.4}" opacity="${big?.9:.45}" stroke-linecap="round"/>`;
     }
-    let nums = '';
     for (let i = 1; i <= 12; i++){
       const rad = Math.PI / 180 * i * 30;
       nums += `<text x="${50+34*Math.sin(rad)}" y="${50-34*Math.cos(rad)+3}" text-anchor="middle" font-size="8" font-weight="600" fill="currentColor">${i}</text>`;
     }
-    m.innerHTML = `<div class="fade"><div class="bar"><h1>Clock</h1><button class="pill glass" id="fmt"></button></div>
-    <div class="face glass"><svg viewBox="0 0 100 100">${ticks}${nums}</svg><div class="hand" id="hh"></div><div class="hand" id="mm"></div><div class="hand" id="ss"></div><div class="pin"></div></div>
-    <div class="dig"><div class="t" id="dt"></div><div class="d" id="dd"></div></div>
-    <h2>World clock</h2>${Z.map((z,i)=>`<div class="wc glass"><div><b>${z[0]}</b><span id="wd${i}"></span></div><div class="tm" id="wt${i}"></div></div>`).join('')}</div>`;
-    $('#fmt').onclick = () => { h24 = !h24; store.set('lc.h24', h24); buzz(8); upd(); };
-    keepAwake(true);
+    return `<div class="page"><div class="bar st"><h1>Clock</h1><div class="acts"><button class="pill glass" id="fmt"></button><button class="pill glass gear" aria-label="Glass settings">${ICON.set}</button></div></div>
+    <div class="face glass st"><svg viewBox="0 0 100 100">${ticks}${nums}</svg><div class="hand" id="hh"></div><div class="hand" id="mm"></div><div class="hand" id="ss"></div><div class="pin"></div></div>
+    <div class="dig st"><div class="t" id="dt"></div><div class="d" id="dd"></div></div>
+    <h2 class="st">World clock</h2>${Z.map((z,i)=>`<div class="wc glass st"><div><b>${z[0]}</b><span id="wd${i}"></span></div><div class="tm" id="wt${i}"></div></div>`).join('')}</div>`;
   }
+  if (t === 'sw') return `<div class="page"><div class="bar st"><h1>Stopwatch</h1><div class="acts"><button class="pill glass gear" aria-label="Glass settings">${ICON.set}</button></div></div><div class="big st" id="sbig"></div>
+    <div class="ctl st"><button class="cb glass" id="sl"></button><button class="cb" id="sg"></button></div><div id="laps"></div></div>`;
+  return `<div class="page"><div class="bar st"><h1>Timer</h1><div class="acts"><button class="pill glass gear" aria-label="Glass settings">${ICON.set}</button></div></div>
+    <div class="ringw glass st" id="rw"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(128,128,150,.25)" stroke-width="3"/><circle id="arc" cx="50" cy="50" r="46" fill="none" stroke="var(--ac)" stroke-width="3" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="0"/></svg><div class="big" id="tbig"></div></div>
+    <div class="pre st">${[1,5,10,25].map(n=>`<button class="pill glass" data-m="${n}">${n} min</button>`).join('')}</div>
+    <div class="ctl st"><button class="cb glass" id="tr">Reset</button><button class="cb" id="tg"></button></div></div>`;
+}
 
+let rid = 0, lastKey = -1;
+
+function mount(dir){
+  view.innerHTML = pageHTML(tab);
+  const p = view.firstElementChild;
+  Object.keys(el).forEach(k => delete el[k]);
+  p.querySelectorAll('[id]').forEach(e => { el[e.id] = e; });
+  lastKey = -1;
+  main.scrollTop = 0;
+  wire();
+  view.querySelectorAll('.gear').forEach(b => { b.onclick = openSet; });
+  anim(p, [{ opacity:0, transform:`translateX(${dir*36}px) scale(.95)` }, { opacity:1, transform:'none' }], { fill:'backwards' });
+  p.querySelectorAll('.st').forEach((e, i) =>
+    anim(e, [{ opacity:0, transform:'translateY(34px) scale(.94)' }, { opacity:1, transform:'none' }], { duration:900, delay:50 + Math.min(i, 8) * 55, fill:'backwards' }));
+}
+
+function show(dir){
+  const id = ++rid, old = view.firstElementChild;
+  let done = false;
+  const swap = () => { if (done || id !== rid) return; done = true; mount(dir); };
+  const a = old && anim(old, [{ opacity:1, transform:'none' }, { opacity:0, transform:`translateX(${-dir*28}px) scale(.96)` }], { duration:170, easing:'ease-in', fill:'forwards' });
+  if (a){ a.onfinish = swap; setTimeout(swap, 280); } else swap();
+}
+
+function setNav(){
+  nav.style.setProperty('--i', idx(tab));
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
+}
+
+function go(t){
+  if (t === tab) return false;
+  const dir = Math.sign(idx(t) - idx(tab));
+  tab = t; setNav();
+  anim(nav.querySelector('.lens div'), [{ transform:'scale(1.22,.84)' }, { transform:'none' }], { duration:900 });
+  show(dir);
+  return true;
+}
+
+function wire(){
+  if (tab === 'clock'){
+    el.fmt.onclick = () => { h24 = !h24; store.set('lc.h24', h24); buzz(8); lastKey = -1; };
+  }
   if (tab === 'sw'){
-    m.innerHTML = `<div class="fade"><div class="bar"><h1>Stopwatch</h1></div><div class="big" id="sbig"></div>
-    <div class="ctl"><button class="cb glass" id="sl"></button><button class="cb" id="sg"></button></div><div id="laps"></div></div>`;
-    $('#sl').onclick = () => {
+    el.sl.onclick = () => {
       buzz(10);
-      if (sw.run){ sw.laps.unshift(swNow()); saveSw(); }
-      else { sw = { run:false, start:0, acc:0, laps:[] }; saveSw(); }
-      drawSw();
+      if (sw.run){ sw.laps.unshift(swNow()); saveSw(); drawSw(true); }
+      else { sw = { run:false, start:0, acc:0, laps:[] }; saveSw(); drawSw(); }
     };
-    $('#sg').onclick = () => {
+    el.sg.onclick = () => {
       buzz(12);
       if (sw.run){ sw.acc = swNow(); sw.run = false; }
       else { sw.start = Date.now(); sw.run = true; }
       saveSw(); drawSw();
     };
     drawSw();
-    keepAwake(false);
   }
-
   if (tab === 'tm'){
-    m.innerHTML = `<div class="fade"><div class="bar"><h1>Timer</h1></div>
-    <div class="ringw glass"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(128,128,150,.25)" stroke-width="3"/><circle id="arc" cx="50" cy="50" r="46" fill="none" stroke="var(--ac)" stroke-width="3" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="0"/></svg><div class="big" id="tbig"></div></div>
-    <div class="pre">${[1,5,10,25].map(n=>`<button class="pill glass" data-m="${n}">${n} min</button>`).join('')}</div>
-    <div class="ctl"><button class="cb glass" id="tr">Reset</button><button class="cb" id="tg"></button></div></div>`;
-    document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
+    view.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
       buzz(8);
-      tm = { run:false, end:0, left: b.dataset.m * 60000, total: b.dataset.m * 60000, done:false };
+      const ms0 = b.dataset.m * 60000;
+      tm = { run:false, end:0, left: ms0, total: ms0, done:false };
       saveTm(); drawTm();
     });
-    $('#tr').onclick = () => {
+    el.tr.onclick = () => {
       buzz(8);
       tm = { run:false, end:0, left: tm.total, total: tm.total, done:false };
       saveTm(); drawTm();
     };
-    $('#tg').onclick = () => {
+    el.tg.onclick = () => {
       buzz(12);
       if (tm.done){ tm.left = tm.total; tm.done = false; }
       if (tm.run){ tm.left = Math.max(0, tm.end - Date.now()); tm.run = false; }
@@ -232,81 +310,189 @@ function render(){
       saveTm(); drawTm();
     };
     drawTm();
-    keepAwake(false);
   }
-  upd();
+  syncAwake();
 }
 
-function drawSw(){
-  const g = $('#sg'), l = $('#sl');
+function drawSw(fresh){
+  const g = el.sg, l = el.sl;
   if (!g) return;
   g.className = 'cb ' + (sw.run ? 'stop' : 'go');
   g.textContent = sw.run ? 'Stop' : 'Start';
   l.textContent = sw.run ? 'Lap' : 'Reset';
   l.disabled = !sw.run && swNow() === 0;
-  $('#laps').innerHTML = sw.laps.map((v, i) =>
+  el.laps.innerHTML = sw.laps.map((v, i) =>
     `<div class="lap glass"><span>Lap ${sw.laps.length - i}</span><span>${ms(v - (sw.laps[i+1] || 0), true)}</span></div>`).join('');
+  if (fresh) anim(el.laps.firstElementChild, [{ opacity:0, transform:'translateY(-20px) scale(.88)' }, { opacity:1, transform:'none' }]);
+  syncAwake();
 }
 
 function drawTm(){
-  const g = $('#tg');
+  const g = el.tg;
   if (!g) return;
   g.className = 'cb ' + (tm.run ? 'stop' : 'go');
   g.textContent = tm.run ? 'Pause' : (tm.done ? 'Again' : 'Start');
+  syncAwake();
 }
 
-/* ---------- frame loop ---------- */
-function upd(){
+/* timer completion is checked on every tab, not only on the Timer tab */
+function checkTm(){
+  if (tm.run && tm.end <= Date.now()){
+    tm.run = false; tm.done = true; tm.left = 0; saveTm();
+    buzz([400, 180, 400, 180, 400]);
+    beep();
+    if (tab === 'tm' && el.tg){ drawTm(); anim(el.rw, [{ transform:'scale(.9)' }, { transform:'none' }], { duration:900 }); }
+    else syncAwake();
+  }
+}
+
+/* ---------- single frame loop ---------- */
+function paint(){
   const d = new Date();
+  checkTm();
 
-  if (tab === 'clock' && $('#hh')){
-    const o = parts(d, myTz), milli = d.getMilliseconds();
-    const s = o.second + milli / 1000, mi = o.minute + s / 60, h = o.hour % 12 + mi / 60;
-    $('#ss').style.transform = `rotate(${s*6}deg)`;
-    $('#mm').style.transform = `rotate(${mi*6}deg)`;
-    $('#hh').style.transform = `rotate(${h*30}deg)`;
-    const f = fmt(o, true);
-    $('#dt').innerHTML = f.t + (f.ap ? `<small>${f.ap}</small>` : '');
-    $('#dd').textContent = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
-    $('#fmt').textContent = h24 ? '24-hour' : '12-hour';
-    Z.forEach((z, i) => {
-      const w = parts(d, z[1]), x = fmt(w, false);
-      const te = $('#wt' + i), de = $('#wd' + i);
-      if (te) te.innerHTML = x.t + (x.ap ? `<small>${x.ap}</small>` : '');
-      if (de) de.textContent = dayWord(d, z[1]);
-    });
-  }
-
-  if (tab === 'sw' && $('#sbig')){
-    $('#sbig').textContent = ms(swNow(), true);
-    const l = $('#sl');
-    if (l) l.disabled = !sw.run && swNow() === 0;
-  }
-
-  if (tab === 'tm' && $('#tbig')){
-    let left = tm.run ? tm.end - Date.now() : tm.left;
-    if (tm.run && left <= 0){
-      tm.run = false; tm.done = true; tm.left = 0; left = 0;
-      saveTm(); drawTm();
-      buzz([400, 180, 400, 180, 400]);
-      beep();
+  if (tab === 'clock' && el.hh){
+    const h = d.getHours(), mi = d.getMinutes(), s = d.getSeconds() + d.getMilliseconds() / 1000;
+    const m2 = mi + s / 60, h2 = h % 12 + m2 / 60;
+    el.ss.style.transform = `rotate(${s*6}deg)`;
+    el.mm.style.transform = `rotate(${m2*6}deg)`;
+    el.hh.style.transform = `rotate(${h2*30}deg)`;
+    const key = Math.floor(d.getTime() / 1000);
+    if (key !== lastKey){
+      lastKey = key;
+      const f = fmt({ hour:h, minute:mi, second:d.getSeconds() }, true);
+      put(el.dt, f.t + (f.ap ? `<small>${f.ap}</small>` : ''), 1);
+      put(el.dd, d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' }));
+      put(el.fmt, h24 ? '24-hour' : '12-hour');
+      Z.forEach((z, i) => {
+        const x = fmt(parts(d, z[1]), false);
+        put(el['wt' + i], x.t + (x.ap ? `<small>${x.ap}</small>` : ''), 1);
+        put(el['wd' + i], dayWord(d, z[1]));
+      });
     }
-    if (left < 0) left = 0;
-    $('#tbig').textContent = tm.done ? 'Done' : ms(Math.ceil(left / 1000) * 1000);
-    const arc = $('#arc');
-    if (arc) arc.style.strokeDashoffset = 289 * (1 - (left / tm.total));
+  } else if (tab === 'sw' && el.sbig){
+    put(el.sbig, ms(swNow(), true));
+    if (el.sl) el.sl.disabled = !sw.run && swNow() === 0;
+  } else if (tab === 'tm' && el.tbig){
+    const left = Math.max(0, tm.run ? tm.end - Date.now() : tm.left);
+    put(el.tbig, tm.done ? 'Done' : ms(Math.ceil(left / 1000) * 1000));
+    if (el.arc) el.arc.style.strokeDashoffset = 289 * (1 - (left / (tm.total || 1)));
   }
-
-  requestAnimationFrame(upd);
 }
+function tick(){ try{ paint(); }catch(e){} requestAnimationFrame(tick); }
+
+/* ---------- iOS-style rubber-band overscroll ---------- */
+let ly = 0, off = 0, drag = false;
+main.addEventListener('touchstart', e => { ly = e.touches[0].clientY; off = 0; drag = true; view.style.transition = 'none'; }, { passive:true });
+main.addEventListener('touchmove', e => {
+  if (!drag) return;
+  const y = e.touches[0].clientY, dy = y - ly; ly = y;
+  const top = main.scrollTop <= 0, bot = main.scrollTop + main.clientHeight >= main.scrollHeight - 1;
+  if ((top && (dy > 0 || off > 0)) || (bot && (dy < 0 || off < 0))){
+    off += dy * (1 - Math.min(Math.abs(off) / 260, .85)) * .5;
+    if (top && !bot) off = Math.max(0, off);
+    else if (bot && !top) off = Math.min(0, off);
+    view.style.transform = `translateY(${off}px)`;
+  } else if (off){ off = 0; view.style.transform = ''; }
+}, { passive:true });
+function release(){
+  drag = false;
+  if (!off) return;
+  off = 0;
+  view.style.transition = `transform .9s ${SP}`;
+  view.style.transform = '';
+}
+main.addEventListener('touchend', release);
+main.addEventListener('touchcancel', release);
+
+/* ---------- glass settings ---------- */
+ICON.set = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>';
+const GL = [
+  { k:'t', label:'Transparency', min:0, max:100, def:50, p:'--ta', f:v => (.1 + 1.8 * (1 - v / 100)).toFixed(3), u:v => v + '%' },
+  { k:'b', label:'Blur', min:0, max:60, def:26, p:'--gb', f:v => v + 'px', u:v => v + ' px' },
+  { k:'s', label:'Vibrancy', min:100, max:300, def:190, p:'--gs', f:v => v + '%', u:v => v + '%' },
+  { k:'h', label:'Shine', min:0, max:150, def:100, p:'--hl', f:v => v / 100, u:v => v + '%' },
+  { k:'g', label:'Background glow', min:0, max:100, def:80, p:'--bo', f:v => v / 100, u:v => v + '%' }
+];
+let gl = store.get('lc.gl', {});
+if (!gl || typeof gl !== 'object') gl = {};
+const gv = g => { const r = gl[g.k]; return (typeof r === 'number' && isFinite(r)) ? Math.min(g.max, Math.max(g.min, r)) : g.def; };
+function applyGlass(){ GL.forEach(g => document.documentElement.style.setProperty(g.p, g.f(gv(g)))); }
+const sheet = $('#sheet'), scrim = $('#scrim');
+sheet.innerHTML = `<div class="grab"></div><div class="sh-h"><b>Glass settings</b><span><button class="pill" id="gr">Reset</button><button class="pill" id="gd">Done</button></span></div>` +
+  GL.map(g => `<div class="row"><div>${g.label}<span id="gv_${g.k}"></span></div><input type="range" id="gi_${g.k}" min="${g.min}" max="${g.max}" step="1" aria-label="${g.label}"></div>`).join('');
+function syncSheet(){
+  GL.forEach(g => {
+    const v = gv(g), i = $('#gi_' + g.k);
+    i.value = v;
+    i.style.setProperty('--p', ((v - g.min) / (g.max - g.min) * 100) + '%');
+    $('#gv_' + g.k).textContent = g.u(v);
+  });
+}
+GL.forEach(g => {
+  const i = $('#gi_' + g.k);
+  i.oninput = () => { gl[g.k] = +i.value; applyGlass(); syncSheet(); };
+  i.onchange = () => store.set('lc.gl', gl);
+});
+$('#gr').onclick = () => { gl = {}; store.set('lc.gl', gl); applyGlass(); syncSheet(); buzz(10); };
+$('#gd').onclick = () => closeSet();
+scrim.onclick = () => closeSet();
+let sOpen = false;
+function openSet(){
+  if (sOpen) return;
+  sOpen = true; syncSheet();
+  sheet.getAnimations().forEach(x => x.cancel());
+  sheet.hidden = false; scrim.classList.add('on');
+  anim(sheet, [{ transform:'translateY(105%)' }, { transform:'none' }], { duration:950 });
+  buzz(8);
+}
+function closeSet(){
+  if (!sOpen) return;
+  sOpen = false; scrim.classList.remove('on');
+  const a = anim(sheet, [{ transform:'none' }, { transform:'translateY(105%)' }], { duration:260, easing:'ease-in', fill:'forwards' });
+  const fin = () => { if (!sOpen){ sheet.hidden = true; sheet.getAnimations().forEach(x => x.cancel()); } };
+  if (a){ a.onfinish = fin; setTimeout(fin, 360); } else fin();
+}
+applyGlass();
 
 /* ---------- wiring ---------- */
-$('#nav').onclick = e => {
+nav.innerHTML = '<div class="lens"><div></div></div>' + TABS.map(t =>
+  `<button data-t="${t[0]}"><i>${ICON[t[0]]}</i>${t[1]}</button>`).join('');
+const lens = nav.querySelector('.lens');
+let pd = null, pos = 0, swallow = false;
+nav.onclick = e => {
+  if (swallow) return;
   const b = e.target.closest('button');
-  if (b && b.dataset.t !== tab){ tab = b.dataset.t; buzz(6); render(); }
+  if (b && go(b.dataset.t)) buzz(6);
 };
+/* drag the glass lens across the 3 tabs */
+nav.addEventListener('pointerdown', e => { pd = { x:e.clientX, moved:false }; });
+nav.addEventListener('pointermove', e => {
+  if (!pd) return;
+  if (!pd.moved){
+    if (Math.abs(e.clientX - pd.x) < 8) return;
+    pd.moved = true; lens.classList.add('drag');
+    try{ nav.setPointerCapture(e.pointerId); }catch(x){}
+  }
+  const r = nav.getBoundingClientRect(), w = (r.width - 14) / 3;
+  pos = Math.max(0, Math.min(2, (e.clientX - r.left - 7) / w - .5));
+  nav.style.setProperty('--i', pos);
+  const n = Math.round(pos);
+  nav.querySelectorAll('button').forEach((b, i) => b.classList.toggle('on', i === n));
+});
+function endDrag(){
+  if (!pd) return;
+  const moved = pd.moved; pd = null;
+  if (!moved) return;
+  lens.classList.remove('drag');
+  if (!go(TABS[Math.round(pos)][0])) setNav();
+  buzz(6);
+  swallow = true; setTimeout(() => { swallow = false; }, 80);
+}
+nav.addEventListener('pointerup', endDrag);
+nav.addEventListener('pointercancel', endDrag);
 
-document.addEventListener('visibilitychange', () => { if (!document.hidden) upd(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) paint(); });
 
 /* called from the native shell */
 window.__setInsets = (top, bottom) => {
@@ -318,13 +504,15 @@ window.__setDark = isDark => {
   const meta = document.querySelector('meta[name=theme-color]');
   if (meta) meta.setAttribute('content', isDark ? '#090a14' : '#eceffa');
 };
-window.__onBack = () => {
-  if (tab !== 'clock'){ tab = 'clock'; render(); return true; }
-  return false;
-};
+window.__onBack = () => { if (sOpen){ closeSet(); return true; } return go('clock'); };
 
-render();
-requestAnimationFrame(upd);
+if (matchMedia('(prefers-color-scheme:dark)').matches) window.__setDark(true);
+
+setNav();
+show(0);
+anim($('.phone'), [{ opacity:0, transform:'scale(.9)' }, { opacity:1, transform:'none' }], { duration:1000 });
+anim(nav, [{ opacity:0, transform:'translateY(110px) scale(.9)' }, { opacity:1, transform:'none' }], { duration:1000, delay:150, fill:'backwards' });
+requestAnimationFrame(tick);
 </script>
 </body>
 </html>

@@ -12,6 +12,8 @@ PLATFORM="$ANDROID_HOME/platforms/android-34/android.jar"
 OUT="$ROOT/build"
 KEYSTORE="${KEYSTORE:-$ROOT/keystore/liquidclock.jks}"
 KS_PASS="${KS_PASS:-liquidclock}"
+VER="${VER:-1.1.0}"
+VCODE="${VCODE:-2}"
 
 rm -rf "$OUT"
 mkdir -p "$OUT/res" "$OUT/classes" "$OUT/dex"
@@ -31,7 +33,7 @@ echo "==> aapt2 link"
   --java "$OUT/gen" \
   --min-sdk-version 23 \
   --target-sdk-version 34 \
-  --version-code 1 --version-name 1.0.0 \
+  --version-code "$VCODE" --version-name "$VER" \
   --auto-add-overlay
 
 echo "==> javac"
@@ -65,7 +67,7 @@ echo "==> apksigner"
 "$BT/apksigner" sign --ks "$KEYSTORE" --ks-key-alias liquidclock \
   --ks-pass "pass:$KS_PASS" --key-pass "pass:$KS_PASS" \
   --v1-signing-enabled true --v2-signing-enabled true \
-  --out "$OUT/LiquidClock-1.0.0.apk" "$OUT/aligned.apk"
+  --out "$OUT/LiquidClock-$VER.apk" "$OUT/aligned.apk"
 
-"$BT/apksigner" verify --print-certs "$OUT/LiquidClock-1.0.0.apk" | head -5
-ls -lh "$OUT/LiquidClock-1.0.0.apk"
+"$BT/apksigner" verify --print-certs "$OUT/LiquidClock-$VER.apk" | head -5
+ls -lh "$OUT/LiquidClock-$VER.apk"

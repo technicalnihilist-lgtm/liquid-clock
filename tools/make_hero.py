@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Compose the four screens into one hero image for the README."""
+"""Compose the screens into one hero image for the README."""
 import os
 from PIL import Image, ImageDraw, ImageFilter
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SH = os.path.join(HERE, "screenshots")
-NAMES = ["1-clock-light.png", "2-clock-dark.png", "3-stopwatch.png", "4-timer.png"]
+NAMES = ["1-clock-light.png", "2-clock-dark.png", "3-stopwatch.png",
+         "4-timer.png", "5-glass-settings.png"]
 
-W = 340
-GAP = 26
-PAD = 44
-RAD = 26
+W = 300
+GAP = 24
+PAD = 40
+RAD = 24
 
 
 def rounded(img, rad):
@@ -24,7 +25,10 @@ def rounded(img, rad):
 def main():
     imgs = []
     for n in NAMES:
-        im = Image.open(os.path.join(SH, n)).convert("RGB")
+        path = os.path.join(SH, n)
+        if not os.path.exists(path):
+            continue
+        im = Image.open(path).convert("RGB")
         h = int(im.height * W / im.width)
         imgs.append(rounded(im.resize((W, h), Image.LANCZOS), RAD))
     h = imgs[0].height
