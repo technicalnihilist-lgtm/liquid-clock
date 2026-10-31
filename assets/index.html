@@ -20,10 +20,11 @@ body{height:100dvh;display:flex;justify-content:center;align-items:center;overfl
 .b3{width:300px;height:300px;background:var(--b3);bottom:-60px;left:-50px;animation-delay:-10s}
 @keyframes fl{to{transform:translate(40px,-50px) scale(1.15)}}
 .glass{background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g1)),var(--glass);backdrop-filter:blur(var(--gb)) saturate(var(--gs));-webkit-backdrop-filter:blur(var(--gb)) saturate(var(--gs));border:1px solid var(--edge2);box-shadow:inset 1.5px 1.5px 1px var(--edge),inset -1px -1px 1px var(--edge2),inset 0 0 22px rgba(255,255,255,.14),0 12px 30px var(--sh)}
-.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(130% 70% at 15% -5%,rgba(255,255,255,.5),transparent 60%);opacity:calc(.4*var(--hl))}
+.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(130% 70% at calc(15% + var(--lx,0)*32%) calc(-5% + var(--ly,0)*24%),rgba(255,255,255,.5),transparent 60%);opacity:calc(.4*var(--hl))}
 main{position:absolute;inset:0;overflow-y:auto;overscroll-behavior-y:none;padding:calc(20px + var(--sat)) 18px calc(120px + var(--sab));scrollbar-width:none;-webkit-overflow-scrolling:touch}
 main::-webkit-scrollbar{display:none}
-#view{will-change:transform}
+#view{will-change:transform;perspective:1000px;transform-style:preserve-3d}
+.page{transform-style:preserve-3d}
 .bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .bar h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.02em}
 .pill,.cb,.wc,.lap,nav button{position:relative;transition:transform .8s var(--spring)}
@@ -245,6 +246,7 @@ function mount(dir){
   main.scrollTop = 0;
   wire();
   view.querySelectorAll('.gear').forEach(b => { b.onclick = openSet; });
+  dn = depthTargets(); dReady = performance.now() + 1100;
   anim(p, [{ opacity:0, transform:`translateX(${dir*36}px) scale(.95)` }, { opacity:1, transform:'none' }], { fill:'backwards' });
   p.querySelectorAll('.st').forEach((e, i) =>
     anim(e, [{ opacity:0, transform:'translateY(34px) scale(.94)' }, { opacity:1, transform:'none' }], { duration:900, delay:50 + Math.min(i, 8) * 55, fill:'backwards' }));
@@ -323,6 +325,7 @@ function drawSw(fresh){
   l.disabled = !sw.run && swNow() === 0;
   el.laps.innerHTML = sw.laps.map((v, i) =>
     `<div class="lap glass"><span>Lap ${sw.laps.length - i}</span><span>${ms(v - (sw.laps[i+1] || 0), true)}</span></div>`).join('');
+  dn = depthTargets();
   if (fresh) anim(el.laps.firstElementChild, [{ opacity:0, transform:'translateY(-20px) scale(.88)' }, { opacity:1, transform:'none' }]);
   syncAwake();
 }
@@ -379,7 +382,7 @@ function paint(){
     if (el.arc) el.arc.style.strokeDashoffset = 289 * (1 - (left / (tm.total || 1)));
   }
 }
-function tick(){ try{ paint(); }catch(e){} requestAnimationFrame(tick); }
+function tick(){ try{ paint(); }catch(e){} try{ applyDepth(); }catch(e){} requestAnimationFrame(tick); }
 
 /* ---------- iOS-style rubber-band overscroll ---------- */
 let ly = 0, off = 0, drag = false;
@@ -408,6 +411,7 @@ main.addEventListener('touchcancel', release);
 /* ---------- glass settings ---------- */
 ICON.set = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>';
 const GL = [
+  { k:'d', label:'4D depth', min:0, max:100, def:35, p:'--dp', f:v => (v / 100).toFixed(3), u:v => v + '%' },
   { k:'t', label:'Transparency', min:0, max:100, def:50, p:'--ta', f:v => (.1 + 1.8 * (1 - v / 100)).toFixed(3), u:v => v + '%' },
   { k:'b', label:'Blur', min:0, max:60, def:26, p:'--gb', f:v => v + 'px', u:v => v + ' px' },
   { k:'s', label:'Vibrancy', min:100, max:300, def:190, p:'--gs', f:v => v + '%', u:v => v + '%' },
@@ -454,6 +458,82 @@ function closeSet(){
   if (a){ a.onfinish = fin; setTimeout(fin, 360); } else fin();
 }
 applyGlass();
+
+/* ---------- 4D depth: layered tilt + parallax that follows touch or the phone itself ---------- */
+const G_DEPTH = GL[0];
+const DEEP = { tx:0, ty:0, px:0, py:0, idle:0, on:false };
+let dn = [], dReady = 0, gSeen = 0, dLast = 0;
+
+function depthTargets(){
+  const page = view.firstElementChild, out = [];
+  if (!page) return out;
+  const take = (sel, dz) => page.querySelectorAll(sel).forEach(e => out.push([e, dz]));
+  take('.bar', .55); take('.face', 1); take('.dig', .7); take('h2', .35);
+  take('.wc', .5); take('.big', .6); take('.ctl', .45); take('.ringw', 1);
+  take('.pre', .35); take('.lap', .4);
+  return out;
+}
+
+function track(x, y){
+  DEEP.tx = Math.max(-1, Math.min(1, (x / innerWidth - .5) * 2));
+  DEEP.ty = Math.max(-1, Math.min(1, (y / innerHeight - .5) * 2));
+  DEEP.idle = performance.now() + 1600;
+}
+/* touch only: the layers lean toward your finger while you drag. Hover is
+   ignored on purpose - tracking the mouse would slide buttons under the cursor. */
+addEventListener('pointermove', e => { if (e.pointerType && e.pointerType !== 'mouse') track(e.clientX, e.clientY); }, { passive:true });
+addEventListener('touchmove', e => { if (e.touches[0]) track(e.touches[0].clientX, e.touches[0].clientY); }, { passive:true });
+
+/* only used if the device actually reports orientation (gyro / accelerometer) */
+addEventListener('deviceorientation', e => {
+  if (e.beta == null || e.gamma == null) return;
+  if (++gSeen < 5) return;
+  DEEP.tx = Math.max(-1, Math.min(1, e.gamma / 32));
+  DEEP.ty = Math.max(-1, Math.min(1, (e.beta - 42) / 32));
+  DEEP.idle = performance.now() + 500;
+}, { passive:true });
+
+function clearDepth(){
+  if (!DEEP.on) return;
+  DEEP.on = false;
+  for (let i = 0; i < dn.length; i++) dn[i][0].style.transform = '';
+
+  const r = document.documentElement.style;
+  r.removeProperty('--lx'); r.removeProperty('--ly');
+}
+
+function applyDepth(){
+  const now = performance.now();
+  const dep = gv(G_DEPTH) / 100;
+  if (RM || dep <= .005 || !dn.length || now < dReady){ clearDepth(); return; }
+
+  /* time based, so the feel is the same at 60fps and on a slow frame */
+  const dt = Math.min(90, Math.max(1, now - dLast || 16.7));
+  dLast = now;
+  const ease = 1 - Math.pow(1 - .14, dt / 16.7);
+
+  /* ease back to flat when the finger lifts and there is no gyro */
+  if (!gSeen && now > DEEP.idle){ const dec = Math.pow(.9, dt / 16.7); DEEP.tx *= dec; DEEP.ty *= dec; }
+  DEEP.px += (DEEP.tx - DEEP.px) * ease;
+  DEEP.py += (DEEP.ty - DEEP.py) * ease;
+  const px = DEEP.px, py = DEEP.py;
+  if (Math.abs(px) < .002 && Math.abs(py) < .002){ clearDepth(); return; }
+
+  DEEP.on = true;
+  /* Differential parallax: near layers travel further than far ones, so the
+     stack reads as depth while the glass stays perfectly clean.
+     (A 3D rotate on the page or on a card makes backdrop-filter repaint in
+     visible tiles, which is why the tilt is done this way.) */
+  for (let i = 0; i < dn.length; i++){
+    const e = dn[i][0], dz = dn[i][1] * dep;
+    e.style.transform =
+      'translate3d(' + (px * 15 * dz).toFixed(2) + 'px,' + (py * 15 * dz).toFixed(2) + 'px,0)' +
+      ' scale(' + (1 + (Math.abs(px) + Math.abs(py)) * .022 * dz).toFixed(3) + ')';
+  }
+  const r = document.documentElement.style;
+  r.setProperty('--lx', (px * dep).toFixed(3));
+  r.setProperty('--ly', (py * dep).toFixed(3));
+}
 
 /* ---------- wiring ---------- */
 nav.innerHTML = '<div class="lens"><div></div></div>' + TABS.map(t =>

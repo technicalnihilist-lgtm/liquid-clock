@@ -28,7 +28,8 @@ App icon: https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/
 - **World clock** — Mumbai, London, New York, Dubai, Tokyo, Sydney with Today / Tomorrow / Yesterday labels relative to your own date
 - **Stopwatch** — start / stop / lap / reset, split times per lap
 - **Timer** — 1, 5, 10 and 25 minute presets, circular progress ring, pause / resume / reset, beep + vibration when it finishes, and the alarm fires even if you are on another tab
-- **Glass settings** — a bottom sheet with live sliders for transparency, blur, vibrancy, shine and background glow; your mix is saved
+- **4D depth** — the layers lean toward your finger as you drag and toward the phone itself when it reports a tilt; near layers travel further than far ones and the specular highlight slides with them. Intensity is a slider, so it can be turned off entirely
+- **Glass settings** — a bottom sheet with live sliders for depth, transparency, blur, vibrancy, shine and background glow; your mix is saved
 - **Motion** — spring-eased tab transitions, a sliding glass lens you can drag between the three tabs, staggered content reveals and iOS-style rubber-band overscroll
 - **Dark mode** — follows the system setting live, no restart needed
 - **Edge to edge** — draws under the status and navigation bars, correct insets on notched phones
@@ -38,7 +39,7 @@ App icon: https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/
 
 ## Install
 
-**[Download LiquidClock-1.1.0.apk](https://github.com/technicalnihilist-lgtm/liquid-clock/releases/latest/download/LiquidClock-1.1.0.apk)** and open it on your phone. You will need to allow install from unknown sources, since this is a self-signed build rather than a Play Store release.
+**[Download LiquidClock-1.2.0.apk](https://github.com/technicalnihilist-lgtm/liquid-clock/releases/latest/download/LiquidClock-1.2.0.apk)** and open it on your phone. You will need to allow install from unknown sources, since this is a self-signed build rather than a Play Store release.
 
 - Minimum Android 6.0 (API 23), targets Android 14 (API 34)
 - Size ~258 KB, no dependencies, no internet permission
@@ -46,6 +47,13 @@ App icon: https://raw.githubusercontent.com/technicalnihilist-lgtm/liquid-clock/
 Newer builds are published on the [Releases](https://github.com/technicalnihilist-lgtm/liquid-clock/releases) page; the same copy also sits in `releases/` in the repo.
 
 ## Changelog
+
+### 1.2.0
+- 4D depth: layered parallax that follows your finger or the phone's tilt, with a specular highlight that moves with it
+- New depth slider at the top of the glass settings sheet (0 turns the effect off), saved with the rest of the mix
+- Depth is time-based rather than frame-based, so it feels the same at 60fps and on a slow frame
+- Depth only follows touch, never mouse hover, so buttons never slide out from under a tap
+- Parallax is done with translation and scale only — a 3D rotate on the page makes `backdrop-filter` repaint the glass in visible tiles
 
 ### 1.1.0
 - Glass settings sheet: transparency, blur, vibrancy, shine and background glow sliders, remembered across launches
@@ -64,7 +72,7 @@ No Gradle needed — the APK is assembled with the Android SDK command line tool
 
 ```bash
 export ANDROID_HOME=$HOME/Android/Sdk   # needs build-tools;34.0.0 and platforms;android-34
-VER=1.1.0 VCODE=2 bash build.sh
+VER=1.2.0 VCODE=3 bash build.sh
 ```
 
 The output lands in `build/LiquidClock-<version>.apk`. The first run generates a signing key at `keystore/liquidclock.jks`; keep that file, because Android only accepts updates signed with the same key.
